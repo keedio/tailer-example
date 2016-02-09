@@ -54,15 +54,26 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
 
     LOGGER.info("onFileCreate: "+file);
 
+    initTailer(file);
+  }
+
+  private Tailer initTailer(File file) {
     Tailer tailer = new Tailer(file, new KeedioTailerListenerAdapter(), 50);
     tailers.put(file.getAbsolutePath(),tailer);
-    executorService.submit(tailer);
 
+    executorService.submit(tailer);
+    return tailer;
   }
 
   @Override
   public void onFileChange(File file) {
     super.onFileChange(file);
+
+    Tailer tailer = tailers.get(file.getAbsolutePath());
+
+    if (tailer == null){
+      initTailer(file);
+    }
 
     LOGGER.info("onFileChange: "+file);
   }
