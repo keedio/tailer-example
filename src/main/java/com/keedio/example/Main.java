@@ -4,14 +4,11 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
-import java.util.concurrent.Executor;
-import java.util.logging.Logger;
 
 /**
  * Created by Luca Rosellini <lrosellini@keedio.com> on 9/2/16.
@@ -26,8 +23,8 @@ public class Main {
     IOFileFilter fileFilter =
             FileFilterUtils.or(DirectoryFileFilter.DIRECTORY,
             FileFilterUtils.and(
-                    HiddenFileFilter.VISIBLE/*,
-                    FileFilterUtils.suffixFileFilter(".log")*/));
+                    HiddenFileFilter.VISIBLE,
+                    FileFilterUtils.suffixFileFilter(".log")));
 
     File directory = new File(args[0]);
     FileAlterationObserver observer = new FileAlterationObserver(directory, fileFilter);

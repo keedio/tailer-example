@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,7 +18,9 @@ import java.util.concurrent.Executors;
 public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerAdaptor {
   private final static Logger LOGGER = LogManager.getLogger(KeedioFileAlterationListenerAdaptor.class);
 
-  private ExecutorService executorService = Executors.newFixedThreadPool(10);
+  private ExecutorService executorService = Executors.newCachedThreadPool();
+  private Map<String, Tailer> tailers = new HashMap<String, Tailer>();
+
 
   @Override
   public void onStart(FileAlterationObserver observer) {
@@ -51,7 +55,9 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
     LOGGER.info("onFileCreate: "+file);
 
     Tailer tailer = new Tailer(file, new KeedioTailerListenerAdapter(), 50);
+    tailers.put(file.getAbsolutePath(),tailer);
     executorService.submit(tailer);
+
   }
 
   @Override
@@ -64,6 +70,13 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   @Override
   public void onFileDelete(File file) {
     super.onFileDelete(file);
+
+    Tailer tailer = tailers.get(file.getAbsolutePath());
+
+    if (tailer != null){
+      tailer.stop();
+      tailers.remove(file.getAbsolutePath());
+    }
 
     LOGGER.info("onFileDelete: "+file);
   }

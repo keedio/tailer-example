@@ -14,7 +14,6 @@ public class KeedioTailerListenerAdapter extends TailerListenerAdapter {
   private final static Logger OUT_LOGGER = LogManager.getLogger("com.keedio.out");
   private Tailer instance;
   private int countedLines = 0;
-  private Object mutex = new Object();
 
   @Override
   public void handle(Exception ex) {
