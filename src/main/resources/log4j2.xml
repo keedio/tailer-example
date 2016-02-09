@@ -4,13 +4,13 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
-    <RollingFile name="file-log" fileName="/Users/luca/tmp/mycuteblog-info.log"
-                 filePattern="${log-path}/mycuteblog-info-%d{yyyy-MM-dd}.log">
+    <RollingFile name="file-log" fileName="${log-path}/tailer-example.log"
+                 filePattern="${log-path}/tailer-example-%d{yyyy-MM-dd}.log">
       <PatternLayout>
         <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
       </PatternLayout>
       <Policies>
-        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="1 MB" />
       </Policies>
     </RollingFile>
   </Appenders>
@@ -19,7 +19,7 @@
       <AppenderRef ref="Console"/>
     </Root>
     <Logger name="com.keedio.out" level="TRACE" additivity="false">
-      <appender-ref ref="file-log" level="TRACE"/>
+      <appender-ref ref="file-log" level=""/>
     </Logger>
   </Loggers>
 </Configuration>
