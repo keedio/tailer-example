@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    <RollingFile name="file-log" fileName="/Users/luca/tmp/mycuteblog-info.log"
+                 filePattern="${log-path}/mycuteblog-info-%d{yyyy-MM-dd}.log">
+      <PatternLayout>
+        <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="DEBUG">
+      <AppenderRef ref="Console"/>
+    </Root>
+    <Logger name="com.keedio.out" level="TRACE" additivity="false">
+      <appender-ref ref="file-log" level="TRACE"/>
+    </Logger>
+  </Loggers>
+</Configuration>
