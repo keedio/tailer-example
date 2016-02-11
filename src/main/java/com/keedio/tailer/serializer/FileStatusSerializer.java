@@ -1,7 +1,7 @@
-package com.keedio.example.serializer;
+package com.keedio.tailer.serializer;
 
-import com.keedio.example.io.Tailer;
-import com.keedio.example.io.TailerInitializer;
+import com.keedio.tailer.io.Tailer;
+import com.keedio.tailer.io.TailerInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

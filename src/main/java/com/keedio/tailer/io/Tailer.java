@@ -1,6 +1,6 @@
-package com.keedio.example.io;
+package com.keedio.tailer.io;
 
-import com.keedio.example.KeedioTailerListener;
+import com.keedio.tailer.listener.KeedioTailerListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 

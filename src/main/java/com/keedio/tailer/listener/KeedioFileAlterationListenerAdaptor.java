@@ -1,26 +1,28 @@
-package com.keedio.example;
+package com.keedio.tailer.listener;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.keedio.example.io.Tailer;
-import com.keedio.example.rotation.RotationPolicy;
-import com.keedio.example.serializer.FileStatusSerializer;
-import com.keedio.example.serializer.StatusSerializer;
+import com.keedio.tailer.io.Tailer;
+import com.keedio.tailer.rotation.RotationPolicy;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Created by Luca Rosellini <lrosellini@keedio.com> on 9/2/16.
  */
+@Component
 public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerAdaptor {
   private final static Logger LOGGER = LogManager.getLogger(KeedioFileAlterationListenerAdaptor.class);
 
@@ -29,10 +31,39 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
 
   final static Map<String, Tailer> tailers = Collections.synchronizedMap(new HashMap<String, Tailer>());
 
-  private RotationPolicy rotationPolicy;
+  @Autowired
+  private KeedioTailerListener keedioTailerListener;
 
-  public KeedioFileAlterationListenerAdaptor(RotationPolicy rotationPolicy) {
-    this.rotationPolicy = rotationPolicy;
+  @Value("${start.from.end:false}")
+  private boolean startFromEnd;
+
+  @Value("${tail.delay.millis:100}")
+  private long tailDelayMillis;
+
+  @PostConstruct
+  public void postConstruct(){
+    LOGGER.info("postConstruct");
+  }
+
+  private Tailer initTailer(final File file) {
+    Tailer tailer = new Tailer(file, keedioTailerListener, tailDelayMillis, startFromEnd);
+
+    doInitTailer(file, tailer);
+
+    return tailer;
+  }
+
+  private void doInitTailer(final File file, Tailer tailer) {
+    tailers.put(file.getAbsolutePath(),tailer);
+
+    ListenableFuture<?> tailerFuture = executorService.submit(Executors.callable(tailer));
+
+    tailerFuture.addListener(new Runnable() {
+      public void run() {
+        LOGGER.warn("Forgetting file: " + file.getAbsolutePath());
+        forgetFile(file);
+      }
+    }, MoreExecutors.directExecutor());
   }
 
   @Override
@@ -68,30 +99,6 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
     LOGGER.info("onFileCreate: "+file);
 
     initTailer(file);
-  }
-
-  private Tailer initTailer(final File file) {
-    String isEnd = System.getProperty("start.from.end");
-
-    Tailer tailer = new Tailer(file, new KeedioTailerListenerAdapter(rotationPolicy), 100,
-            isEnd == null||"".equals(isEnd) ? false : Boolean.valueOf(isEnd));
-
-    doInitTailer(file, tailer);
-
-    return tailer;
-  }
-
-  private void doInitTailer(final File file, Tailer tailer) {
-    tailers.put(file.getAbsolutePath(),tailer);
-
-    ListenableFuture<?> tailerFuture = executorService.submit(Executors.callable(tailer));
-
-    tailerFuture.addListener(new Runnable() {
-      public void run() {
-        LOGGER.warn("Forgetting file: " + file.getAbsolutePath());
-        forgetFile(file);
-      }
-    }, MoreExecutors.directExecutor());
   }
 
   @Override

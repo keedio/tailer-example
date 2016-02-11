@@ -1,7 +1,7 @@
-package com.keedio.example;
+package com.keedio.tailer.listener;
 
-import com.keedio.example.io.Tailer;
-import com.keedio.example.rotation.RotationPolicy;
+import com.keedio.tailer.io.Tailer;
+import com.keedio.tailer.rotation.RotationPolicy;
 import org.apache.commons.io.input.TailerListener;
 
 /**

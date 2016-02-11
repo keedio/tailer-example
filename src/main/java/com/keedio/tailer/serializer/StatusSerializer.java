@@ -1,7 +1,6 @@
-package com.keedio.example.serializer;
+package com.keedio.tailer.serializer;
 
-import com.keedio.example.io.Tailer;
-import com.keedio.example.io.TailerInitializer;
+import com.keedio.tailer.io.Tailer;
 
 import java.util.Collection;
 import java.util.List;

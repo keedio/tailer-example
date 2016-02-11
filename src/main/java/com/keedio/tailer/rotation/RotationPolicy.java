@@ -1,4 +1,4 @@
-package com.keedio.example.rotation;
+package com.keedio.tailer.rotation;
 
 /**
  * Created by Luca Rosellini <lrosellini@keedio.com> on 10/2/16.

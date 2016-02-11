@@ -1,8 +1,8 @@
-package com.keedio.example.io;
+package com.keedio.tailer.io;
 
-import com.keedio.example.KeedioTailerListener;
-import com.keedio.example.rotation.RotationPolicy;
-import com.keedio.example.serializer.StatusSerializer;
+import com.keedio.tailer.listener.KeedioTailerListener;
+import com.keedio.tailer.rotation.RotationPolicy;
+import com.keedio.tailer.serializer.StatusSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
