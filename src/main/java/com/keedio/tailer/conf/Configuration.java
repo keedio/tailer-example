@@ -48,13 +48,12 @@ public class Configuration {
             filter = FileFilterUtils.or(filter,
                     FileFilterUtils.and(
                             HiddenFileFilter.VISIBLE, regexFileFilter));
+
         } else if (!StringUtils.isEmpty(blacklistRegexp)){
 
             RegexFileFilter regexFileFilter = new RegexFileFilter(blacklistRegexp);
 
-            filter = FileFilterUtils.or(filter,
-                    FileFilterUtils.and(
-                            HiddenFileFilter.VISIBLE, FileFilterUtils.notFileFilter(regexFileFilter)));
+            filter = FileFilterUtils.and(filter, FileFilterUtils.notFileFilter(regexFileFilter));
 
         } else {
             throw new IllegalArgumentException("Either whitelist.regexp or blacklist.regexp must be provided");

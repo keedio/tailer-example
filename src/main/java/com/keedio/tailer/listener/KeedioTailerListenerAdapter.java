@@ -1,6 +1,7 @@
 package com.keedio.tailer.listener;
 
 import com.keedio.tailer.io.Tailer;
+import com.keedio.tailer.output.TailerOutputProcessor;
 import com.keedio.tailer.rotation.RotationPolicy;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.apache.logging.log4j.LogManager;
@@ -19,18 +20,20 @@ import java.util.TimerTask;
 @Component
 public class KeedioTailerListenerAdapter extends TailerListenerAdapter implements KeedioTailerListener {
     private final static Logger LOGGER = LogManager.getLogger(KeedioTailerListenerAdapter.class);
-    private final static Logger OUT_LOGGER = LogManager.getLogger("com.keedio.out");
 
     private Tailer instance;
     private TailerTaskTimeoutHelper timeoutHelper;
 
     private int countedLines = 0;
 
-    @Value("${timeout.delay:10000}")
+    @Value("${file.monitoring.timeout:10000}")
     private long timeoutDelay;
 
     @Autowired
     private RotationPolicy rotationPolicy;
+
+    @Autowired
+    private TailerOutputProcessor tailerOutput;
 
     @Override
     public void handle(Exception ex) {
@@ -113,7 +116,8 @@ public class KeedioTailerListenerAdapter extends TailerListenerAdapter implement
 
         countedLines++;
         LOGGER.info("[" + instance.getFile().getAbsolutePath() + "], lines: " + countedLines);
-        OUT_LOGGER.trace(line);
+
+        tailerOutput.process(line);
 
         timeoutHelper.resetTimer();
     }

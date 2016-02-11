@@ -40,11 +40,6 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   @Value("${tail.delay.millis:100}")
   private long tailDelayMillis;
 
-  @PostConstruct
-  public void postConstruct(){
-    LOGGER.info("postConstruct");
-  }
-
   private Tailer initTailer(final File file) {
     Tailer tailer = new Tailer(file, keedioTailerListener, tailDelayMillis, startFromEnd);
 

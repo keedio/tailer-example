@@ -4,6 +4,7 @@ import com.keedio.tailer.io.Tailer;
 import com.keedio.tailer.io.TailerInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +17,8 @@ import java.util.List;
 public class FileStatusSerializer  implements StatusSerializer {
   private transient final static Logger LOGGER = LogManager.getLogger(TailerInitializer.class);
 
-  private static final String statusfile = "/Users/luca/tmp/test/tailer-status.ser";
+  @Value("${status.file.path:}")
+  private String statusfile;
 
   @Override
   public void serializeStatus(Collection<Tailer> tailerInitializers) {
