@@ -1,6 +1,5 @@
 package com.keedio.tailer.conf;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;

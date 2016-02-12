@@ -3,6 +3,7 @@ package com.keedio.tailer.conf;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +18,9 @@ public class ShutdownHooks {
     @Autowired
     private FileAlterationMonitor monitor;
 
+    @Autowired
+    private ApplicationContext ctx;
+
     @PostConstruct
     public void init(){
         Runtime.getRuntime().addShutdownHook(new Thread(){
@@ -30,5 +34,6 @@ public class ShutdownHooks {
                 }
             }
         });
+
     }
 }

@@ -1,13 +1,11 @@
 package com.keedio.tailer.io;
 
+import com.keedio.tailer.listener.DummyKeedioTailListener;
 import com.keedio.tailer.listener.KeedioTailerListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * Created by Luca Rosellini <lrosellini@keedio.com> on 9/2/16.
@@ -48,8 +46,8 @@ public class Tailer extends org.apache.commons.io.input.Tailer {
   /**
    * The listener to notify of events when tailing.
    */
-  private final KeedioTailerListener listener;
-
+  private KeedioTailerListener listener;
+  private final KeedioTailerListener dummyListener = new DummyKeedioTailListener();
   /**
    * Whether to close and reopen the file whilst waiting for more input.
    */
@@ -291,6 +289,9 @@ public class Tailer extends org.apache.commons.io.input.Tailer {
           //position = end ? file.length() : ();
           lastTimestamp = System.currentTimeMillis();
           reader.seek(position);
+          if (end) {
+            rollbackToLineStart(reader);
+          }
         }
       }
 
@@ -366,7 +367,23 @@ public class Tailer extends org.apache.commons.io.input.Tailer {
     }
   }
 
-  /**
+  private void rollbackToLineStart(RandomAccessFile reader) throws IOException {
+    final char cr = '\n';
+
+    final int numBytesRead = 1;
+
+    do {
+
+      position = Math.max(0, position - numBytesRead);
+      reader.seek(position);
+
+    } while (position > 0 && (char) reader.readByte() != cr);
+
+    if (position > 0)
+      reader.seek(++position);
+  }
+
+    /**
    * Allows the tailer to complete its current loop and return.
    */
   public void stop() {

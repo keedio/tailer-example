@@ -106,7 +106,7 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
       initTailer(file);
     }
 
-    LOGGER.info("onFileChange: "+file);
+    LOGGER.trace("onFileChange: "+file);
   }
 
   @Override
