@@ -3,6 +3,7 @@ package com.keedio.tailer.listener;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.keedio.tailer.LRTailer;
 import com.keedio.tailer.io.Tailer;
 import com.keedio.tailer.rotation.RotationPolicy;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
@@ -29,10 +30,10 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   final static ListeningExecutorService executorService =
           MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
 
-  final static Map<String, Tailer> tailers = Collections.synchronizedMap(new HashMap<String, Tailer>());
+  final static Map<String, LRTailer> tailers = Collections.synchronizedMap(new HashMap<String, LRTailer>());
 
   @Autowired
-  private KeedioTailerListener keedioTailerListener;
+  private FileEventListener keedioTailerListener;
 
   @Value("${start.from.end:false}")
   private boolean startFromEnd;
@@ -40,16 +41,16 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   @Value("${tail.delay.millis:100}")
   private long tailDelayMillis;
 
-  private Tailer initTailer(final File file) {
-    Tailer tailer = new Tailer(file, keedioTailerListener, tailDelayMillis, startFromEnd);
+  private LRTailer initTailer(final File file) {
+    LRTailer tailer = new LRTailer(keedioTailerListener, tailDelayMillis, file.getAbsolutePath());
 
     doInitTailer(file, tailer);
 
     return tailer;
   }
 
-  private void doInitTailer(final File file, Tailer tailer) {
-    tailers.put(file.getAbsolutePath(),tailer);
+  private void doInitTailer(final File file, LRTailer tailer) {
+    tailers.put(file.getAbsolutePath(), tailer);
 
     ListenableFuture<?> tailerFuture = executorService.submit(Executors.callable(tailer));
 
@@ -100,7 +101,7 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   public void onFileChange(File file) {
     super.onFileChange(file);
 
-    Tailer tailer = tailers.get(file.getAbsolutePath());
+    LRTailer tailer = tailers.get(file.getAbsolutePath());
 
     if (tailer == null){
       initTailer(file);
@@ -119,7 +120,7 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   }
 
   void forgetFile(File file) {
-    Tailer tailer = tailers.get(file.getAbsolutePath());
+    LRTailer tailer = tailers.get(file.getAbsolutePath());
 
     if (tailer != null){
       tailer.stop();

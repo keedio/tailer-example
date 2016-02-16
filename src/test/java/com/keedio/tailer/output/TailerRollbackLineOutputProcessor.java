@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import static com.keedio.tailer.output.TailerRollbackLineTest.*;
+
 /**
  * Created by luca on 12/2/16.
  */
@@ -18,11 +20,12 @@ class TailerRollbackLineOutputProcessor implements TailerOutputProcessor {
 
         if (!line.endsWith("40861.41,None,0.0)") || !line.startsWith("[TRACE]")) {
 
-            LOGGER.error("Read line is not valid: " + line);
-            throw new RuntimeException("Aborting");
+            throw new RuntimeException("Read line is not valid: " + line);
 
-        } else if(TailerRollbackLineTest.lineNumber == -1) {
-            TailerRollbackLineTest.lineNumber = Integer.parseInt("" + line.charAt(8));
+        } else {
+            LOGGER.info("Valid line detected: " + line);
+
+            setLineNumber(Integer.parseInt("" + line.charAt(8)));
         }
     }
 }

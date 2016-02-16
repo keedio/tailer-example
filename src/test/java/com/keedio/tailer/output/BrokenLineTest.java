@@ -1,9 +1,7 @@
 package com.keedio.tailer.output;
 
 import com.google.common.io.Files;
-import com.keedio.tailer.Main;
 import com.keedio.tailer.conf.Configuration;
-import com.keedio.tailer.validator.LineValidator;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,11 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,7 +20,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,43 +27,18 @@ import static org.junit.Assert.assertEquals;
  * Created by luca on 11/2/16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("tailerRollbackLineOutputProcessor")
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
-public class TailerRollbackLineTest {
-    @org.springframework.context.annotation.Configuration
-    @Import(Configuration.class)
-    static class TestConf implements LineValidator{
-        private static final String regexp = "^\\[TRACE\\].*\\)$";
-        private static final Pattern pattern = Pattern.compile(regexp);
+@ActiveProfiles("brokenLineOutputProcessor")
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = Configuration.class)
+public class BrokenLineTest {
 
-        @Override
-        public boolean isValid(String partialLine) {
-            boolean res = pattern.matcher(partialLine).matches();
-
-            if (res){
-                //LOGGER.info("Found match on line: " +partialLine);
-            }
-
-            return res;
-        }
-    }
-
-    private final static Logger LOGGER = LogManager.getLogger(TailerRollbackLineTest.class);
+    private final static Logger LOGGER = LogManager.getLogger(BrokenLineTest.class);
 
     private File logFile;
 
     @Value("${root.scan.dir}")
     private File logDir;
 
-    private static int lineNumber = -1;
-
-    public static void setLineNumber(int num){
-        lineNumber = num;
-    }
-
-    public static int getLineNumber(){
-        return lineNumber;
-    }
+    static int lineNumber = -1;
 
     @Autowired
     private FileAlterationMonitor monitor;
@@ -85,15 +53,14 @@ public class TailerRollbackLineTest {
     @After
     public void destroy() throws Exception {
         monitor.stop(0);
-        logFile.delete();
+        //logFile.delete();
     }
 
     /**
      * Generates a constant string of data char by char, outputted to a temp file.
      */
     class DataGenerator implements Runnable {
-        String data = "[TRACE] 2016-02-09 16:41:09.873 [pool-3-thread-1] out - \\nAccountTransaction(1455032469864,1455032469864,SzptpSNPWNVqojsHPbYH,0399158778252679 05623732,bIowQQUwFLBRbbb,329475618292398,2,-1180.0,40861.41,None,0.0)";
-
+        String data = "{\"log\":\"2016-02-02 10:53:22.285 [main] INFO  org.springframework.context.supp\rort.DefaultLifecycleProcessor - {\"category\":\"applicationlog\",\"requestId\":\"\",\"timestamp\": 2016-02-02 10:53:22.285,\"description\":\"Starting beans in phase 0\",\"returnCode\":\"\",\"trace\":\"\",\"appName\":\"bootstrap\",\"serverId\":\"null\"}\",\"stream\":\"stdout\",\"time\":\"2016-02-02T09:53:22.287849201Z\"}";
         long timeout;
         int maxLines;
 
@@ -123,7 +90,7 @@ public class TailerRollbackLineTest {
                         w.flush();
                         Thread.sleep(timeout);
                     }
-                    w.write("\n");
+                    w.write('\n');
                     k++;
                 }
             } catch (Exception e) {
@@ -143,22 +110,9 @@ public class TailerRollbackLineTest {
 
         monitor.start();
 
-        dataGenerator.join(3000);
+        dataGenerator.join(20000);
 
-        Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
+        //Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
     }
 
-    @Test
-    public void lineRollbackTestOneLine() throws Exception {
-
-        Thread dataGenerator = new Thread(new DataGenerator(10,1));
-        dataGenerator.start();
-
-        monitor.start();
-
-        Thread.sleep(3000);
-
-        dataGenerator.join(2000);
-        assertEquals("Read line number should be 0", 0, lineNumber);
-    }
 }

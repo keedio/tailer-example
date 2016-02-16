@@ -1,9 +1,8 @@
 package com.keedio.tailer;
 
-import com.keedio.tailer.listener.KeedioTailerListenerAdapter;
+import com.keedio.tailer.listener.KeedioFileEventListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -11,14 +10,15 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class Main {
   private final static org.apache.logging.log4j.Logger LOGGER =
-          LogManager.getLogger(KeedioTailerListenerAdapter.class);
+          LogManager.getLogger(KeedioFileEventListener.class);
 
+  static FileAlterationMonitor monitor;
+  static AnnotationConfigApplicationContext ctx;
   public static void main(String[] args) throws Exception {
 
-    ApplicationContext ctx =
-            new AnnotationConfigApplicationContext("com.keedio.tailer");
+    ctx = new AnnotationConfigApplicationContext("com.keedio.tailer");
 
-    FileAlterationMonitor monitor = ctx.getBean(FileAlterationMonitor.class);
+    monitor =  ctx.getBean(FileAlterationMonitor.class);
     monitor.start();
   }
 }

@@ -403,6 +403,8 @@ public class Tailer extends org.apache.commons.io.input.Tailer {
     long pos = reader.getFilePointer();
     long rePos = pos; // position to re-read
 
+
+
     int num;
     boolean seenCR = false;
     while (run && ((num = reader.read(inbuf)) != -1)) {

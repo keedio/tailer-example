@@ -1,5 +1,9 @@
 package com.keedio.tailer.conf;
 
+import com.keedio.tailer.listener.FileEventListener;
+import com.keedio.tailer.listener.impl.LogFileEventListener;
+import com.keedio.tailer.validator.LineValidator;
+import com.keedio.tailer.validator.NewLineValidator;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -7,6 +11,7 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.util.StringUtils;
@@ -17,6 +22,7 @@ import java.io.File;
  * Created by luca on 10/2/16.
  */
 @org.springframework.context.annotation.Configuration
+@ComponentScan("com.keedio.tailer")
 @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 public class Configuration {
 
