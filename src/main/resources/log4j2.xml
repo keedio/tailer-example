@@ -4,8 +4,8 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
-    <RollingFile name="file-log" fileName="${log.path}/tailer-example.log"
-                 filePattern="${log.path}/tailer-example-%d{yyyy-MM-dd}.log">
+    <RollingFile name="file-log" fileName="${sys:logPath}/tailer-example.log"
+                 filePattern="${sys:logPath}/tailer-example-%d{yyyy-MM-dd}.log">
       <PatternLayout>
         <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
       </PatternLayout>
