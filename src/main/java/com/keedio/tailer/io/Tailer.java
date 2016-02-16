@@ -5,7 +5,10 @@ import com.keedio.tailer.listener.KeedioTailerListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * Created by Luca Rosellini <lrosellini@keedio.com> on 9/2/16.

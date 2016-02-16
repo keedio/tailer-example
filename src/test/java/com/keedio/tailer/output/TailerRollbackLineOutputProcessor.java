@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import static com.keedio.tailer.output.TailerRollbackLineTest.*;
+import static com.keedio.tailer.output.TailerRollbackLineTest.setLineNumber;
 
 /**
  * Created by luca on 12/2/16.

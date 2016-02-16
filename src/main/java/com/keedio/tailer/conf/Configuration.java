@@ -1,9 +1,5 @@
 package com.keedio.tailer.conf;
 
-import com.keedio.tailer.listener.FileEventListener;
-import com.keedio.tailer.listener.impl.LogFileEventListener;
-import com.keedio.tailer.validator.LineValidator;
-import com.keedio.tailer.validator.NewLineValidator;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;

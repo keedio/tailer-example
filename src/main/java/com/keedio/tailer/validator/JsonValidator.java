@@ -1,7 +1,6 @@
 package com.keedio.tailer.validator;
 
 import com.google.gson.Gson;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 

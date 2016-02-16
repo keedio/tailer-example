@@ -2,6 +2,8 @@ package com.keedio.tailer.output;
 
 import com.google.common.io.Files;
 import com.keedio.tailer.conf.Configuration;
+import com.keedio.tailer.validator.JsonValidator;
+import com.keedio.tailer.validator.LineValidator;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,17 +24,25 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-
-import static org.junit.Assert.assertEquals;
+import java.util.regex.Pattern;
 
 /**
  * Created by luca on 11/2/16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("brokenLineOutputProcessor")
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = Configuration.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
 public class BrokenLineTest {
+    @org.springframework.context.annotation.Configuration
+    @Import(Configuration.class)
+    static class TestConf {
 
+        @Bean
+        public LineValidator lineValidator(){
+            return new JsonValidator();
+        }
+
+    }
     private final static Logger LOGGER = LogManager.getLogger(BrokenLineTest.class);
 
     private File logFile;
@@ -53,7 +65,7 @@ public class BrokenLineTest {
     @After
     public void destroy() throws Exception {
         monitor.stop(0);
-        //logFile.delete();
+        logFile.delete();
     }
 
     /**
@@ -106,13 +118,13 @@ public class BrokenLineTest {
         Thread dataGenerator = new Thread(new DataGenerator(5,100));
         dataGenerator.start();
 
-        Thread.sleep(3000);
+        Thread.sleep(1000);
 
         monitor.start();
 
-        dataGenerator.join(20000);
+        dataGenerator.join(10000);
 
-        //Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
+        Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
     }
 
 }

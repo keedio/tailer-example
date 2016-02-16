@@ -1,7 +1,6 @@
 package com.keedio.tailer.output;
 
 import com.google.common.io.Files;
-import com.keedio.tailer.Main;
 import com.keedio.tailer.conf.Configuration;
 import com.keedio.tailer.validator.LineValidator;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -13,10 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -143,7 +139,7 @@ public class TailerRollbackLineTest {
 
         monitor.start();
 
-        dataGenerator.join(3000);
+        dataGenerator.join(10000);
 
         Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
     }
