@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -30,7 +31,6 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
 
   final static Map<String, LRTailer> tailers = Collections.synchronizedMap(new HashMap<String, LRTailer>());
 
-  @Autowired
   private FileEventListener keedioTailerListener;
 
   @Value("${start.from.end:false}")
@@ -39,7 +39,11 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   @Value("${tail.delay.millis:100}")
   private long tailDelayMillis;
 
+  @Autowired
+  private ApplicationContext springContext;
+
   private LRTailer initTailer(final File file) {
+    this.keedioTailerListener = springContext.getBean(FileEventListener.class);
     LRTailer tailer = new LRTailer(keedioTailerListener, tailDelayMillis, file.getAbsolutePath());
 
     doInitTailer(file, tailer);
@@ -62,6 +66,8 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
 
   @Override
   public void onStart(FileAlterationObserver observer) {
+
+
     super.onStart(observer);
   }
 
@@ -89,7 +95,6 @@ public class KeedioFileAlterationListenerAdaptor extends FileAlterationListenerA
   @Override
   public void onFileCreate(File file) {
     super.onFileCreate(file);
-
     LOGGER.info("onFileCreate: "+file);
 
     initTailer(file);

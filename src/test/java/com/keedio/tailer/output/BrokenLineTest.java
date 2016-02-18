@@ -39,7 +39,21 @@ public class BrokenLineTest {
 
         @Bean
         public LineValidator lineValidator(){
-            return new JsonValidator();
+            return new LineValidator() {
+                private final String regexp = "^\\{\"log\":.*\\}$";
+                private final Pattern pattern = Pattern.compile(regexp);
+
+                @Override
+                public boolean isValid(String partialLine) {
+                    boolean res = pattern.matcher(partialLine).matches();
+
+                    if (res){
+                        ++lineNumber;
+                    }
+
+                    return res;
+                }
+            };
         }
 
     }
@@ -122,7 +136,7 @@ public class BrokenLineTest {
 
         monitor.start();
 
-        dataGenerator.join(10000);
+        dataGenerator.join(100000);
 
         Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
     }

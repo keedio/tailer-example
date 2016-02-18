@@ -13,12 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import javax.sound.sampled.Line;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
@@ -35,19 +37,26 @@ import static org.junit.Assert.assertEquals;
 public class TailerRollbackLineTest {
     @org.springframework.context.annotation.Configuration
     @Import(Configuration.class)
-    static class TestConf implements LineValidator{
-        private static final String regexp = "^\\[TRACE\\].*\\)$";
-        private static final Pattern pattern = Pattern.compile(regexp);
+    static class TestConf {
 
-        @Override
-        public boolean isValid(String partialLine) {
-            boolean res = pattern.matcher(partialLine).matches();
+        @Bean
+        public LineValidator lineValidator(){
+            return new LineValidator() {
 
-            if (res){
-                //LOGGER.info("Found match on line: " +partialLine);
-            }
+                private final String regexp = "^\\[TRACE\\].*\\)$";
+                private final Pattern pattern = Pattern.compile(regexp);
 
-            return res;
+                @Override
+                public boolean isValid(String line) {
+                    boolean res = pattern.matcher(line).matches();
+
+                    if (res){
+                        setLineNumber(Integer.parseInt("" + line.charAt(8)));
+                    }
+
+                    return res;
+                }
+            };
         }
     }
 
@@ -139,7 +148,7 @@ public class TailerRollbackLineTest {
 
         monitor.start();
 
-        dataGenerator.join(10000);
+        dataGenerator.join(4000);
 
         Assert.assertTrue("Read line number should be greater than 0, found: " + lineNumber, lineNumber > 0);
     }
@@ -150,11 +159,11 @@ public class TailerRollbackLineTest {
         Thread dataGenerator = new Thread(new DataGenerator(10,1));
         dataGenerator.start();
 
-        monitor.start();
-
         Thread.sleep(3000);
 
-        dataGenerator.join(2000);
+        monitor.start();
+
+        dataGenerator.join(4000);
         assertEquals("Read line number should be 0", 0, lineNumber);
     }
 }

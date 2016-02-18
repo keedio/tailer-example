@@ -25,7 +25,6 @@ class TailerRollbackLineOutputProcessor implements TailerOutputProcessor {
         } else {
             LOGGER.info("Valid line detected: " + line);
 
-            setLineNumber(Integer.parseInt("" + line.charAt(8)));
         }
     }
 }

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Timer;
@@ -17,6 +18,7 @@ import java.util.TimerTask;
  * Created by Luca Rosellini <lrosellini@keedio.com> on 9/2/16.
  */
 @Component
+@Scope("prototype")
 public class KeedioFileEventListener implements FileEventListener {
 
     private final static Logger LOGGER = LogManager.getLogger(KeedioFileEventListener.class);
@@ -34,7 +36,7 @@ public class KeedioFileEventListener implements FileEventListener {
     @Autowired
     private RotationPolicy rotationPolicy;
 
-    @Value("${file.monitoring.timeout:60000}")
+    @Value("${file.monitoring.timeout}")
     private long timeoutDelay;
 
     private TailerTaskTimeoutHelper timeoutHelper;

@@ -19,6 +19,7 @@ public class JsonValidator implements LineValidator {
             gson.fromJson(line, Object.class);
             return true;
         } catch(com.google.gson.JsonSyntaxException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
